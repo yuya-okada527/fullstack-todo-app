@@ -1,17 +1,26 @@
-import pytest
 from fastapi.testclient import TestClient
 from main import app
-from tests.utils import make_url
 
 client = TestClient(app)
 
 TODO_API_PATH = "/v1/todos"
 
 
-@pytest.mark.parametrize("params", [
-    []
-])
-def test_get_todo(params):
-    url = make_url(TODO_API_PATH, params)
-    response = client.get(url)
-    assert response.status_code == 200, f"params={params} test failed.  url={url}"
+def test_search_todo():
+    response = client.get(TODO_API_PATH)
+    assert response.status_code == 200
+
+
+def test_post_todo():
+    response = client.post(TODO_API_PATH)
+    assert response.status_code == 200
+
+
+def test_modify_todo():
+    response = client.put(TODO_API_PATH)
+    assert response.status_code == 200
+
+
+def test_delete_todo():
+    response = client.delete(TODO_API_PATH)
+    assert response.status_code == 200
