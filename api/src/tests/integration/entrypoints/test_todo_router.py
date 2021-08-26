@@ -32,5 +32,6 @@ def test_modify_todo():
 
 
 def test_delete_todo():
-    response = client.delete(TODO_API_PATH)
+    response = client.delete(TODO_API_PATH + "/" + TODO_DATA["id"])
     assert response.status_code == 200
+    assert response.json() == {"id": TODO_DATA["id"]}

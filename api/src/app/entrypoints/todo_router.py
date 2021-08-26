@@ -35,6 +35,8 @@ async def modify_todo(todo_id: str):
     }
 
 
-@router.delete("")
-async def delete_todo():
-    return ""
+@router.delete("/{todo_id}")
+async def delete_todo(todo_id: str):
+    return {
+        "id": todo_id
+    }
