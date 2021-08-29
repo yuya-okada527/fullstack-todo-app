@@ -3,4 +3,4 @@ from pydantic import BaseModel
 
 
 class MutationResponse(BaseModel):
-    id: str
+    id: int

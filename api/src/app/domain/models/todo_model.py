@@ -1,11 +1,17 @@
 from typing import Optional
+from sqlmodel import SQLModel, Field
 
-from pydantic import BaseModel
+class Todo(SQLModel):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
+    status: str
 
-from domain.enums.todo_enums import TodoStatus
+
+class TodoCreate(SQLModel):
+    name: str
+    status: str
 
 
-class TodoModel(BaseModel):
-    id: Optional[str]
+class TodoUpdate(SQLModel):
     name: Optional[str]
-    status: Optional[TodoStatus]
+    status: Optional[str]

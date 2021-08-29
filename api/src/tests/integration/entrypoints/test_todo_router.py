@@ -7,7 +7,7 @@ client = TestClient(app)
 
 TODO_API_PATH = "/v1/todos"
 
-TODO_DATA = {"id": "1", "name": "name", "status": "todo"}
+TODO_DATA = {"id": 1, "name": "name", "status": "todo"}
 
 
 def test_search_todo():
@@ -25,13 +25,13 @@ def test_post_todo():
 
 
 def test_modify_todo():
-    response = client.put(TODO_API_PATH + "/" + TODO_DATA["id"])
+    response = client.patch(TODO_API_PATH + "/" + str(TODO_DATA["id"]), json.dumps({}))
     assert response.status_code == 200
     assert response.json() == {"id": TODO_DATA["id"]}
 
 
 
 def test_delete_todo():
-    response = client.delete(TODO_API_PATH + "/" + TODO_DATA["id"])
+    response = client.delete(TODO_API_PATH + "/" + str(TODO_DATA["id"]))
     assert response.status_code == 200
     assert response.json() == {"id": TODO_DATA["id"]}

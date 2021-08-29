@@ -1,18 +1,18 @@
 from typing import List
 from fastapi import APIRouter
 
-from domain.models.todo_model import TodoModel
+from domain.models.todo_model import Todo, TodoCreate, TodoUpdate
 from entrypoints.message.todo_message import MutationResponse
 
 
-router = APIRouter(prefix="/v1/todos")
-
-# TODO messageは、モデルから切り分ける
-
+router = APIRouter(
+    prefix="/v1/todos",
+    tags=["TODO"]
+)
 
 @router.get(
     "",
-    response_model=List[TodoModel]
+    response_model=List[Todo]
 )
 async def search_todo():
     return [{"id": 1, "name": "name", "status": "todo"}]
@@ -22,21 +22,21 @@ async def search_todo():
     "",
     response_model=MutationResponse
 )
-async def create_todo(todo: TodoModel):
+async def create_todo(todo: TodoCreate):
     return {
-        "id": "1"
+        "id": 1
     }
 
 
-@router.put("/{todo_id}")
-async def modify_todo(todo_id: str):
+@router.patch("/{todo_id}")
+async def modify_todo(todo_id: int, todo: TodoUpdate):
     return {
         "id": todo_id
     }
 
 
 @router.delete("/{todo_id}")
-async def delete_todo(todo_id: str):
+async def delete_todo(todo_id: int):
     return {
         "id": todo_id
     }
