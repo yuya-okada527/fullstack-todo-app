@@ -48,9 +48,9 @@ async def modify_todo(
     todo_id: int,
     todo: TodoUpdate
 ):
-    target = session.exec(select(Todo).where(Todo.id == todo_id)).first()
+    target = session.get(Todo, todo_id)
     if not target:
-        raise HTTPException(status_code=404, detail="Todo not found")
+        raise HTTPException(status_code=404, detail="Target not found")
     for key, value in todo.dict(exclude_unset=True).items():
         setattr(target, key, value)
     session.add(target)
@@ -66,6 +66,11 @@ async def delete_todo(
     session: Session = Depends(get_session),
     todo_id: int
 ):
+    target = session.get(Todo, todo_id)
+    if not target:
+        raise HTTPException(status_code=404, detail="Target not found")
+    session.delete(target)
+    session.commit()
     return {
         "id": todo_id
     }

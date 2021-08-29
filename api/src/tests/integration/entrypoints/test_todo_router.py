@@ -54,6 +54,17 @@ def test_modify_todo_not_found(client: TestClient):
 
 
 def test_delete_todo(client: TestClient, session: Session):
-    response = client.delete(TODO_API_PATH + "/" + str(TODO_DATA["id"]))
+    todo = Todo(name="test", status="todo")
+    session.add(todo)
+    session.commit()
+    session.refresh(todo)
+    todo_id = todo.id
+    response = client.delete(TODO_API_PATH + "/" + str(todo_id))
     assert response.status_code == 200
-    assert response.json() == {"id": TODO_DATA["id"]}
+    assert response.json() == {"id": todo_id}
+    assert session.get(Todo, todo_id) is None
+
+
+def test_delete_todo_not_found(client: TestClient):
+    response = client.delete(TODO_API_PATH + "/" + "1")
+    assert response.status_code == 404
