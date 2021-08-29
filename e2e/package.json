@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "devDependencies": {
+    "cypress": "^8.3.1"
+  }
+}
