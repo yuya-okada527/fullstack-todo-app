@@ -2,6 +2,7 @@ import json
 
 from fastapi.testclient import TestClient
 from sqlmodel import Session
+from sqlmodel.sql.expression import select
 from domain.models.todo_model import Todo
 
 TODO_API_PATH = "/v1/todos"
@@ -21,11 +22,16 @@ def test_search_todo(client: TestClient, session: Session):
 
 
 def test_post_todo(client: TestClient, session: Session):
-    todo = TODO_DATA.copy()
-    todo.pop("id")
+    todo = {
+        "name": "test",
+        "status": "todo"
+    }
     response = client.post(TODO_API_PATH, json.dumps(todo))
     assert response.status_code == 200
-    assert response.json() == {"id": TODO_DATA["id"]}
+    assert response.json() == {"id": 1}
+    new_todo = session.exec(select(Todo).where(Todo.name == todo["name"])).one()
+    assert new_todo.name == todo["name"]
+    assert new_todo.status == todo["status"]
 
 
 def test_modify_todo(client: TestClient, session: Session):

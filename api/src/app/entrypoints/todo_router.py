@@ -27,9 +27,17 @@ async def search_todo(
     "",
     response_model=MutationResponse
 )
-async def create_todo(todo: TodoCreate):
+async def create_todo(
+    *,
+    session: Session = Depends(get_session),
+    todo: TodoCreate
+):
+    new_todo = Todo.from_orm(todo)
+    session.add(new_todo)
+    session.commit()
+    session.refresh(new_todo)
     return {
-        "id": 1
+        "id": new_todo.id
     }
 
 
