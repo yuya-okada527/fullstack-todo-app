@@ -22,5 +22,13 @@ def test_all_scenario(client: TestClient):
         "name": "test",
         "status": "doing"
     }]
+    client.patch(f"{TODO_API_PATH}/1", json.dumps({
+        "name": "modified"
+    }))
+    assert client.get(TODO_API_PATH).json()["results"] == [{
+        "id": 1,
+        "name": "modified",
+        "status": "doing"
+    }]
     client.delete(f"{TODO_API_PATH}/1")
     assert client.get(TODO_API_PATH).json()["results"] == []

@@ -4,7 +4,7 @@ from sqlmodel import Session
 
 from domain.models.todo_model import Todo, TodoCreate, TodoUpdate, get_session
 from entrypoints.message.todo_message import MutationResponse, SearchResponse
-from service.todo_service import search_todo_service
+from service.todo_service import create_todo_service, search_todo_service
 
 
 router = APIRouter(
@@ -43,16 +43,19 @@ async def create_todo(
     session: Session = Depends(get_session),
     todo: TodoCreate
 ):
-    new_todo = Todo.from_orm(todo)
-    session.add(new_todo)
-    session.commit()
-    session.refresh(new_todo)
+    todo_id = create_todo_service(
+        session=session,
+        todo=todo
+    )
     return {
-        "id": new_todo.id
+        "id": todo_id
     }
 
 
-@router.patch("/{todo_id}")
+@router.patch(
+    "/{todo_id}",
+    response_model=MutationResponse
+)
 async def modify_todo(
     *,
     session: Session = Depends(get_session),
@@ -71,7 +74,10 @@ async def modify_todo(
     }
 
 
-@router.delete("/{todo_id}")
+@router.delete(
+    "/{todo_id}",
+    response_model=MutationResponse
+)
 async def delete_todo(
     *,
     session: Session = Depends(get_session),

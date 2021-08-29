@@ -1,4 +1,5 @@
 import pytest
+import json
 
 from fastapi.testclient import TestClient
 
@@ -23,3 +24,21 @@ def test_search_todo_200(client: TestClient, mocker, params):
 ])
 def test_search_todo_422(client: TestClient, params):
     assert client.get(make_url(TODO_API_PATH, params)).status_code == 422, f"params={params} must be invalid params"
+
+@pytest.mark.parametrize("data", [
+    {"name": "test", "status": "todo"},
+    {"name": "test", "status": "doing"},
+    {"name": "test", "status": "done"}
+])
+def test_create_todo_200(client: TestClient, mocker, data):
+    mocker.patch("service.todo_service.create_todo_service", return_value=1)
+    assert client.post(TODO_API_PATH, json.dumps(data)).status_code == 200, f"data={data} must be valid data"
+
+
+@pytest.mark.parametrize("data", [
+    {"name": "test"},
+    {"status": "doing"},
+    {"name": "test", "status": "hoge"}
+])
+def test_create_todo_200(client: TestClient, data):
+    assert client.post(TODO_API_PATH, json.dumps(data)).status_code == 422, f"data={data} must be invalid data"

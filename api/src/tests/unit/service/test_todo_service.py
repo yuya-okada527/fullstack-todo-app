@@ -1,7 +1,7 @@
 from sqlmodel import Session
 
-from domain.models.todo_model import Todo
-from service.todo_service import search_todo_service
+from domain.models.todo_model import Todo, TodoCreate
+from service.todo_service import create_todo_service, search_todo_service
 
 
 def test_search_todo_service(session: Session):
@@ -32,3 +32,7 @@ def test_search_todo_searvice_pagination(session: Session):
     assert search_todo_service(session, 2, 2) == [
         todos[2]
     ]
+
+
+def test_create_todo_service(session: Session):
+    assert create_todo_service(session, TodoCreate(name="test", status="todo")) == 1

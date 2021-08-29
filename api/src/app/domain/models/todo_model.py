@@ -11,12 +11,12 @@ class Todo(SQLModel, table=True):
 
 class TodoCreate(SQLModel):
     name: str
-    status: str
+    status: str = Field(regex=r"todo|doing|done")
 
 
 class TodoUpdate(SQLModel):
     name: Optional[str]
-    status: Optional[str]
+    status: Optional[str] = Field(default=None, regex=r"todo|doing|done")
 
 
 engine = create_engine(db_settings.db_url)
