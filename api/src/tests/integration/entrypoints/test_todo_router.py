@@ -15,7 +15,11 @@ def test_search_todo(client: TestClient, session: Session):
 
     response = client.get(TODO_API_PATH)
     assert response.status_code == 200
-    assert response.json() == [todo]
+    assert response.json() == {
+        "results": [todo],
+        "start": 0,
+        "rows": 10
+    }
 
 
 def test_create_todo(client: TestClient, session: Session):

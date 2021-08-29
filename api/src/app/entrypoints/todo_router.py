@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
 
 from domain.models.todo_model import Todo, TodoCreate, TodoUpdate, get_session
-from entrypoints.message.todo_message import MutationResponse
+from entrypoints.message.todo_message import MutationResponse, SearchResponse
 from service.todo_service import search_todo_service
 
 
@@ -14,19 +14,24 @@ router = APIRouter(
 
 @router.get(
     "",
-    response_model=List[Todo]
+    response_model=SearchResponse
 )
 async def search_todo(
     *,
     session: Session = Depends(get_session),
-    offset: Optional[int] = Query(0),
-    limit: Optional[int] = Query(10)
+    start: Optional[int] = Query(0, ge=0),
+    rows: Optional[int] = Query(10, ge=0, le=100)
 ):
-    return search_todo_service(
+    todos = search_todo_service(
         session=session,
-        offset=offset,
-        limit=limit
+        offset=start,
+        limit=rows
     )
+    return {
+        "start": start,
+        "rows": rows,
+        "results": todos
+    }
 
 
 @router.post(
