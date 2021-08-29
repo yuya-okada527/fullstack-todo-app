@@ -4,10 +4,7 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session
 from sqlmodel.sql.expression import select
 from domain.models.todo_model import Todo
-
-TODO_API_PATH = "/v1/todos"
-
-TODO_DATA = {"id": 1, "name": "name", "status": "todo"}
+from tests.utils import TODO_API_PATH
 
 
 def test_search_todo(client: TestClient, session: Session):
