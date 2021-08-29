@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 from sqlmodel.sql.expression import select
 
@@ -48,6 +48,13 @@ async def modify_todo(
     todo_id: int,
     todo: TodoUpdate
 ):
+    target = session.exec(select(Todo).where(Todo.id == todo_id)).first()
+    if not target:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    for key, value in todo.dict(exclude_unset=True).items():
+        setattr(target, key, value)
+    session.add(target)
+    session.commit()
     return {
         "id": todo_id
     }

@@ -21,7 +21,7 @@ def test_search_todo(client: TestClient, session: Session):
     assert response.json() == [todo]
 
 
-def test_post_todo(client: TestClient, session: Session):
+def test_create_todo(client: TestClient, session: Session):
     todo = {
         "name": "test",
         "status": "todo"
@@ -35,10 +35,22 @@ def test_post_todo(client: TestClient, session: Session):
 
 
 def test_modify_todo(client: TestClient, session: Session):
-    response = client.patch(TODO_API_PATH + "/" + str(TODO_DATA["id"]), json.dumps({}))
+    todo = Todo(name="test", status="todo")
+    session.add(todo)
+    session.commit()
+    session.refresh(todo)
+    response = client.patch(TODO_API_PATH + "/" + str(todo.id), json.dumps({
+        "status": "doing"
+    }))
     assert response.status_code == 200
-    assert response.json() == {"id": TODO_DATA["id"]}
+    assert response.json() == {"id": todo.id}
+    session.refresh(todo)
+    assert todo.status == "doing"
 
+
+def test_modify_todo_not_found(client: TestClient):
+    response = client.patch(TODO_API_PATH + "/" + "1", json.dumps({}))
+    assert response.status_code == 404
 
 
 def test_delete_todo(client: TestClient, session: Session):
