@@ -1,10 +1,10 @@
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
-from sqlmodel.sql.expression import select
 
 from domain.models.todo_model import Todo, TodoCreate, TodoUpdate, get_session
 from entrypoints.message.todo_message import MutationResponse
+from service.todo_service import search_todo_service
 
 
 router = APIRouter(
@@ -18,9 +18,15 @@ router = APIRouter(
 )
 async def search_todo(
     *,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_session),
+    offset: Optional[int] = Query(0),
+    limit: Optional[int] = Query(10)
 ):
-    return session.exec(select(Todo)).all()
+    return search_todo_service(
+        session=session,
+        offset=offset,
+        limit=limit
+    )
 
 
 @router.post(
