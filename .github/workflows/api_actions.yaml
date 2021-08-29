@@ -26,5 +26,7 @@ jobs:
         run: echo "$HOME/.poetry/bin" >> $GITHUB_PATH
       - name: Install Dependencies
         run: poetry install
+        working-directory: ./api
       - name: Unit test
         run: poetry run pytest src/tests -v --cov=src/app --cov-branch
+        working-directory: ./api
