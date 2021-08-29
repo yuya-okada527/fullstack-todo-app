@@ -1,10 +1,10 @@
-from typing import List, Optional
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
 
 from domain.models.todo_model import Todo, TodoCreate, TodoUpdate, get_session
 from entrypoints.message.todo_message import MutationResponse, SearchResponse
-from service.todo_service import create_todo_service, search_todo_service
+from service.todo_service import create_todo_service, delete_todo_service, modify_todo_service, search_todo_service
 
 
 router = APIRouter(
@@ -62,15 +62,15 @@ async def modify_todo(
     todo_id: int,
     todo: TodoUpdate
 ):
-    target = session.get(Todo, todo_id)
-    if not target:
+    target_id = modify_todo_service(
+        session=session,
+        todo_id=todo_id,
+        todo=todo
+    )
+    if not target_id:
         raise HTTPException(status_code=404, detail="Target not found")
-    for key, value in todo.dict(exclude_unset=True).items():
-        setattr(target, key, value)
-    session.add(target)
-    session.commit()
     return {
-        "id": todo_id
+        "id": target_id
     }
 
 
@@ -83,11 +83,9 @@ async def delete_todo(
     session: Session = Depends(get_session),
     todo_id: int
 ):
-    target = session.get(Todo, todo_id)
-    if not target:
+    target_id = delete_todo_service(session=session, todo_id=todo_id)
+    if not target_id:
         raise HTTPException(status_code=404, detail="Target not found")
-    session.delete(target)
-    session.commit()
     return {
-        "id": todo_id
+        "id": target_id
     }

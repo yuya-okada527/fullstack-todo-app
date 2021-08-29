@@ -19,7 +19,7 @@ class TodoUpdate(SQLModel):
     status: Optional[str] = Field(default=None, regex=r"todo|doing|done")
 
 
-engine = create_engine(db_settings.db_url)
+engine = create_engine(db_settings.db_url, echo=db_settings.echo)
 
 
 def create_db_and_tables():

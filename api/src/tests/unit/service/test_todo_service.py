@@ -1,7 +1,7 @@
 from sqlmodel import Session
 
-from domain.models.todo_model import Todo, TodoCreate
-from service.todo_service import create_todo_service, search_todo_service
+from domain.models.todo_model import Todo, TodoCreate, TodoUpdate
+from service.todo_service import create_todo_service, delete_todo_service, modify_todo_service, search_todo_service
 
 
 def test_search_todo_service(session: Session):
@@ -36,3 +36,13 @@ def test_search_todo_searvice_pagination(session: Session):
 
 def test_create_todo_service(session: Session):
     assert create_todo_service(session, TodoCreate(name="test", status="todo")) == 1
+
+
+def test_delete_todo_service(session: Session):
+    todo = Todo(name="test", status="todo")
+    session.add(todo)
+    session.commit()
+    session.refresh(todo)
+    todo_id = todo.id
+    delete_todo_service(session, todo_id)
+    assert session.get(Todo, todo_id) is None
